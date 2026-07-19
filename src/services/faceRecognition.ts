@@ -59,6 +59,10 @@ export async function initializeFaceRecognition(): Promise<boolean> {
       try {
         // Configure ONNX Runtime WebAssembly backend
         ort.env.wasm.wasmPaths = FACE_RECOGNITION.WASM_CDN
+        // Force single-threaded mode (avoids SharedArrayBuffer requirement)
+        ort.env.wasm.numThreads = 1
+        // Disable proxy worker to simplify WASM loading
+        ort.env.wasm.proxy = false
 
         const modelPath = FACE_RECOGNITION.MODEL_PATH
         session = await ort.InferenceSession.create(modelPath, {
@@ -82,7 +86,15 @@ export async function initializeFaceRecognition(): Promise<boolean> {
         console.log('[FaceRecognition] Input:', modelInputName, 'Output:', modelOutputName)
         return true
       } catch (err) {
-        console.error(`[FaceRecognition] Load attempt ${attempt}/${MAX_RETRIES} failed:`, err)
+        const msg = err instanceof Error ? err.message : String(err)
+        console.error(`[FaceRecognition] Load attempt ${attempt}/${MAX_RETRIES} failed:`, msg)
+        console.error('[FaceRecognition] Env:', {
+          wasmPaths: ort.env.wasm.wasmPaths,
+          numThreads: ort.env.wasm.numThreads,
+          proxy: ort.env.wasm.proxy,
+          simd: ort.env.wasm.simd,
+          hasSAB: typeof SharedArrayBuffer !== 'undefined',
+        })
         if (attempt < MAX_RETRIES) {
           // Brief delay before retry
           await new Promise((resolve) => setTimeout(resolve, 1000))
