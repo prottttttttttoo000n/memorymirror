@@ -12,14 +12,36 @@ pnpm dev              # Vite dev server (face detection works, no AI)
 pnpm dev:pages        # also run this for AI features (separate terminal)
 ```
 
-Need AI features? Get Cloudflare credentials at https://dash.cloudflare.com/signup (free, no credit card) and set them in the app's Settings page or `.env`:
+Need AI features? Get Cloudflare credentials at https://dash.cloudflare.com/signup (free, no credit card).
 
-```
-VITE_CLOUDFLARE_ACCOUNT_ID=your_account_id
-VITE_CLOUDFLARE_API_TOKEN=your_api_token
+### Local Dev
+
+```bash
+# Terminal 1: Vite dev server
+pnpm dev
+
+# Terminal 2: Wrangler AI proxy (for STT + LLM)
+pnpm dev:pages
 ```
 
-Open http://localhost:5173 (or http://localhost:8788 with AI proxy).
+Create a `.dev.vars` file in the project root:
+```
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_API_TOKEN=your_api_token
+```
+
+Open http://localhost:8788 (Wrangler serves the app + API proxy).
+
+### Production (pages.dev)
+
+For audio transcription and LLM features on the deployed site, you must set Cloudflare secrets:
+
+```bash
+npx wrangler pages secret put CLOUDFLARE_ACCOUNT_ID
+npx wrangler pages secret put CLOUDFLARE_API_TOKEN
+```
+
+These are different from Vite env vars — they're injected into Pages Functions server-side.
 
 ## Features
 
@@ -36,13 +58,19 @@ Open http://localhost:5173 (or http://localhost:8788 with AI proxy).
 | Component | Technology | Cost |
 |-----------|-----------|------|
 | Face Detection | MediaPipe BlazeFace (WASM, client-side) | $0 |
-| Face Recognition | MobileFaceNet via ONNX Runtime Web (WASM, client-side) | $0 |
+| Face Recognition | MobileFaceNet via ONNX Runtime Web (WASM, client-side, uses local non-threaded ORT WASM) | $0 |
 | Speech-to-Text | Cloudflare Workers AI Whisper | $0 (~10k neurons/day) |
 | LLM Extraction | Cloudflare Workers AI Llama 3.1 8B | $0 (~10k neurons/day) |
 | Hosting | Cloudflare Pages | $0 |
 | Storage | IndexedDB (browser built-in) | $0 |
 
 All face data stays on-device. Only anonymized audio and text are sent to Cloudflare Workers AI via a server-side proxy.
+
+### Face Recognition Deployment Notes
+
+ONNX Runtime Web 1.27.0 only ships threaded WASM binaries that require `SharedArrayBuffer` (needs COOP/COEP headers). Since Cloudflare Pages doesn't set these headers, we host **non-threaded** ORT WASM files from v1.17.1 in `public/wasm/` and serve them locally. The `WASM_CDN` constant points to `/wasm/` instead of a CDN.
+
+If you update `onnxruntime-web`, verify that non-threaded WASM files exist at the CDN path, or the local fallback in `public/wasm/` must be updated.
 
 ## Scripts
 
