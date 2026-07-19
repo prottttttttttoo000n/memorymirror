@@ -76,8 +76,9 @@ export const FACE_RECOGNITION = {
    * Historical note: the old opencv_zoo GitHub raw URL (mobilefacenet/mobilefacenet.onnx)
    * was moved when opencv_zoo migrated to Hugging Face. The model below is the official
    * replacement: SFace (MobileFaceNet backbone, 128-dim embeddings).
+   * We use the int8-quantized version (~10 MB vs ~39 MB float) for faster downloads.
    * Fallback provided for custom model via VITE_FACE_MODEL_PATH env. */
-  MODEL_PATH: import.meta.env.VITE_FACE_MODEL_PATH as string | undefined ?? 'https://huggingface.co/opencv/face_recognition_sface/resolve/main/face_recognition_sface_2021dec.onnx',
+  MODEL_PATH: import.meta.env.VITE_FACE_MODEL_PATH as string | undefined ?? 'https://huggingface.co/opencv/face_recognition_sface/resolve/main/face_recognition_sface_2021dec_int8.onnx',
   /** Input tensor shape expected by the model */
   INPUT_SHAPE: [1, 3, 112, 112] as const,
   /** Minimum cosine similarity to consider a face match */

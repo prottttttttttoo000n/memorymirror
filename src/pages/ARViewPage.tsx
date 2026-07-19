@@ -55,6 +55,7 @@ export function ARViewPage({ onPersonClick }: ARViewPageProps = {}) {
   const {
     error: recognitionError,
     isModelLoaded: recognitionModelReady,
+    isLoading: recognitionLoading,
   } = useFaceRecognition({
     videoElement: videoEl,
     enabled: stream !== null && !isLoading && !error,
@@ -203,7 +204,7 @@ export function ARViewPage({ onPersonClick }: ARViewPageProps = {}) {
                 <span>Face recognition: {recognitionError}</span>
               </div>
             )}
-            {/* Fallback: detection only when recognition model failed to load */}
+            {/* Recognition model status */}
             {isStreaming && !recognitionModelReady && !recognitionError && (
               <div
                 style={{
@@ -217,7 +218,7 @@ export function ARViewPage({ onPersonClick }: ARViewPageProps = {}) {
                   opacity: 0.6,
                 }}
               >
-                Recognition offline
+                {recognitionLoading ? 'Loading recognition model...' : 'Recognition offline'}
               </div>
             )}
           </>
