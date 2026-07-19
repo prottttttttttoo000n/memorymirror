@@ -7,6 +7,7 @@
     "dev": "vite --host",
     "dev:pages": "wrangler pages dev dist/ --proxy 5173",
     "build": "tsc -b && vite build",
+    "postbuild": "node -e \"require('fs').readdirSync('dist/assets').filter(f=>f.endsWith('.wasm')).forEach(f=>require('fs').rmSync('dist/assets/'+f));console.log('Removed ONNX WASM files (loaded from CDN)');\"",
     "lint": "oxlint",
     "preview": "vite preview",
     "tunnel": "npx cloudflared tunnel --url http://localhost:5173"

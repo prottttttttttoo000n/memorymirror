@@ -37,5 +37,8 @@ dist-ssr
 # OpenCode / AI agent working directories
 .omo/
 
+# Local-only internal reference (not published to GitHub)
+INTERNAL.md
+
 # OS junk
 Thumbs.db
