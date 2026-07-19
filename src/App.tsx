@@ -255,33 +255,40 @@ export default function App() {
     )
   }
 
-  // Render ALL pages, hide inactive ones via display:none.
-  // This keeps the AR camera stream and face models alive across tab switches
-  // instead of unmounting/remounting (which forced full model reload).
-  const pageStyle = (tabId: TabId): React.CSSProperties => ({
-    position: 'absolute' as const,
-    inset: 0,
-    display: activeTab === tabId ? 'flex' : 'none',
-    flexDirection: 'column',
-  })
+  // AR view stays mounted (hidden via display:none) so camera stream and face
+  // models survive tab switches. Other pages mount/unmount normally on tab
+  // switch so they re-fetch fresh data from IndexedDB on each visit.
+  const arHiddenStyle: React.CSSProperties = activeTab !== 'ar-view'
+    ? { display: 'none' }
+    : {}
+
+  const renderPage = () => {
+    switch (activeTab) {
+      case 'ar-view':
+        return <ARViewPage onPersonClick={handlePersonClick} />
+      case 'timeline':
+        return <TimelinePage onMemoryClick={handleMemoryClick} />
+      case 'people':
+        return <PeoplePage onPersonClick={handlePersonClick} />
+      case 'settings':
+        return <SettingsPage />
+    }
+  }
 
   return (
     <div style={styles.app}>
-      <main style={styles.main}>
-        <div style={{ position: 'relative', flex: 1 }}>
-          <div style={pageStyle('ar-view')}>
-            <ARViewPage onPersonClick={handlePersonClick} />
-          </div>
-          <div style={pageStyle('timeline')}>
-            <TimelinePage onMemoryClick={handleMemoryClick} />
-          </div>
-          <div style={pageStyle('people')}>
-            <PeoplePage onPersonClick={handlePersonClick} />
-          </div>
-          <div style={pageStyle('settings')}>
-            <SettingsPage />
-          </div>
+      <main style={{ ...styles.main, position: 'relative' }}>
+        {/* AR view always mounted (hidden via display:none when on other tabs).
+            Keeps camera stream + face models alive across tab switches. */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: activeTab === 'ar-view' ? 'block' : 'none',
+        }}>
+          <ARViewPage onPersonClick={handlePersonClick} />
         </div>
+        {/* Non-AR pages mount/unmount normally so they re-fetch fresh data on each visit */}
+        {activeTab !== 'ar-view' && renderPage()}
       </main>
       <nav style={styles.nav}>
         {tabs.map((tab) => (
