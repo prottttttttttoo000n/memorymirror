@@ -283,7 +283,8 @@ export default function App() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          display: activeTab === 'ar-view' ? 'block' : 'none',
+          display: activeTab === 'ar-view' ? 'flex' : 'none',
+          flexDirection: 'column',
         }}>
           <ARViewPage onPersonClick={handlePersonClick} />
         </div>
