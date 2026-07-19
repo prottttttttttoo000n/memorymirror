@@ -68,9 +68,13 @@ All face data stays on-device. Only anonymized audio and text are sent to Cloudf
 
 ### Face Recognition Deployment Notes
 
-ONNX Runtime Web 1.27.0 only ships threaded WASM binaries that require `SharedArrayBuffer` (needs COOP/COEP headers). Since Cloudflare Pages doesn't set these headers, we host **non-threaded** ORT WASM files from v1.17.1 in `public/wasm/` and serve them locally. The `WASM_CDN` constant points to `/wasm/` instead of a CDN.
+`onnxruntime-web` is pinned to **1.17.1** because newer versions (1.21+) removed non-threaded WASM binaries. Cloudflare Pages doesn't set COOP/COEP headers, so threaded WASM (which requires `SharedArrayBuffer`) hangs indefinitely.
 
-If you update `onnxruntime-web`, verify that non-threaded WASM files exist at the CDN path, or the local fallback in `public/wasm/` must be updated.
+We host the 1.17.1 non-threaded WASM files (`ort-wasm-simd.wasm`, `ort-wasm.wasm`) in `public/wasm/` and serve them at `/wasm/`. The `WASM_CDN` constant in `src/lib/constants.ts` points there. When `numThreads=1`, ORT 1.17.1 selects the non-threaded SIMD WASM variant automatically.
+
+**If you ever upgrade `onnxruntime-web`**, verify the new version ships non-threaded WASM binaries (`ort-wasm-simd.wasm` and `ort-wasm.wasm`). If not, you must either:
+- Pin back to 1.17.1, or
+- Serve non-threaded WASM files yourself from the matching version.
 
 ## Scripts
 
