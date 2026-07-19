@@ -266,18 +266,23 @@ export function disposeFaceRecognition(): void {
  * suitable for MobileFaceNet.
  */
 function preprocessImage(imageData: ImageData): ort.Tensor {
-  // Create offscreen canvas for resize
+  // putImageData does NOT scale — we must draw the source onto a temp canvas
+  // then use drawImage (which DOES scale) to resize to the model's 112×112 input.
+  const tempCanvas = document.createElement('canvas')
+  tempCanvas.width = imageData.width
+  tempCanvas.height = imageData.height
+  const tempCtx = tempCanvas.getContext('2d')!
+  tempCtx.putImageData(imageData, 0, 0)
+
+  // Now draw (with bilinear scaling) onto the target 112×112 canvas
   const canvas = document.createElement('canvas')
   canvas.width = INPUT_SIZE
   canvas.height = INPUT_SIZE
   const ctx = canvas.getContext('2d')!
-
-  // Draw the source image, resizing to 112×112
-  ctx.putImageData(imageData, 0, 0)
+  ctx.drawImage(tempCanvas, 0, 0, INPUT_SIZE, INPUT_SIZE)
 
   // Read the resized pixel data
-  const resizedCtx = canvas.getContext('2d')!
-  const resized = resizedCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE)
+  const resized = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE)
   const pixels = resized.data
 
   // Build NCHW float32 tensor [1, 3, H, W]
