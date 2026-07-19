@@ -89,8 +89,9 @@ export const FACE_RECOGNITION = {
   ENROLL_DEBOUNCE_MS: 5000,
   /** Minimum face width (pixels) to consider for enrollment */
   ENROLL_MIN_FACE_WIDTH: 100,
-  /** CDN path for ONNX Runtime WebAssembly backend files */
-  WASM_CDN: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/',
+  /** CDN path for ONNX Runtime WebAssembly backend files.
+   * MUST match the installed onnxruntime-web version in package.json. */
+  WASM_CDN: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/',
 } as const
 
 /** LLM configuration for Workers AI Llama 3.1 8B extraction */
