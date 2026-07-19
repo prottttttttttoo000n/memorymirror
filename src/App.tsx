@@ -255,23 +255,33 @@ export default function App() {
     )
   }
 
-  const renderPage = () => {
-    switch (activeTab) {
-      case 'ar-view':
-        return <ARViewPage onPersonClick={handlePersonClick} />
-      case 'timeline':
-        return <TimelinePage onMemoryClick={handleMemoryClick} />
-      case 'people':
-        return <PeoplePage onPersonClick={handlePersonClick} />
-      case 'settings':
-        return <SettingsPage />
-    }
-  }
+  // Render ALL pages, hide inactive ones via display:none.
+  // This keeps the AR camera stream and face models alive across tab switches
+  // instead of unmounting/remounting (which forced full model reload).
+  const pageStyle = (tabId: TabId): React.CSSProperties => ({
+    position: 'absolute' as const,
+    inset: 0,
+    display: activeTab === tabId ? 'flex' : 'none',
+    flexDirection: 'column',
+  })
 
   return (
     <div style={styles.app}>
       <main style={styles.main}>
-        {renderPage()}
+        <div style={{ position: 'relative', flex: 1 }}>
+          <div style={pageStyle('ar-view')}>
+            <ARViewPage onPersonClick={handlePersonClick} />
+          </div>
+          <div style={pageStyle('timeline')}>
+            <TimelinePage onMemoryClick={handleMemoryClick} />
+          </div>
+          <div style={pageStyle('people')}>
+            <PeoplePage onPersonClick={handlePersonClick} />
+          </div>
+          <div style={pageStyle('settings')}>
+            <SettingsPage />
+          </div>
+        </div>
       </main>
       <nav style={styles.nav}>
         {tabs.map((tab) => (

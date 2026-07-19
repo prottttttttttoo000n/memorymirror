@@ -14,10 +14,10 @@
  * drive the UI from the returned EnrollmentAction.
  */
 
-import type { DetectedFace } from '@/types/index.d.ts'
+import type { DetectedFace, Person } from '@/types/index.d.ts'
 import { getEmbedding, findMatch } from '@/services/faceRecognition'
 import type { EnrolledFace } from '@/services/faceRecognition'
-import { getAllEmbeddings, saveFace } from '@/store/faceStore'
+import { getAllEmbeddings, saveFace, addPerson } from '@/store/faceStore'
 import { FACE_RECOGNITION } from '@/lib/constants'
 
 // ── Types ─────────────────────────────────────────────────────────
@@ -181,11 +181,33 @@ export async function confirmEnrollment(name: string): Promise<string> {
     throw new Error('No pending enrollment candidate')
   }
 
+  // Save face embedding to FACES store (used for recognition matching)
   const id = await saveFace({
     name,
     embedding: Array.from(pendingEmbedding),
     thumbnail: pendingCandidate.thumbnail,
   })
+
+  // Also save to PEOPLE store so the person appears in the People tab
+  // and PersonDetailPage can load them.
+  const now = Date.now()
+  const person: Person = {
+    id,
+    name,
+    relationship: '',
+    faceDescriptor: pendingEmbedding,
+    thumbnailUrl: pendingCandidate.thumbnail,
+    lastSeen: now,
+    createdAt: now,
+    updatedAt: now,
+  }
+  try {
+    await addPerson(person)
+  } catch (err) {
+    console.error('[Enrollment] Failed to save person entry:', err)
+    // Non-fatal: face embedding was saved, recognition will work.
+    // The People tab will just be out of sync until the user re-adds.
+  }
 
   pendingCandidate = null
   pendingEmbedding = null

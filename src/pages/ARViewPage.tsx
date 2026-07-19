@@ -79,10 +79,10 @@ export function ARViewPage({ onPersonClick }: ARViewPageProps = {}) {
       return
     }
 
-    // Throttle recognition pipeline to ~every 1.5 s so we don't
+    // Throttle recognition pipeline to ~every 800ms so we don't
     // hammer the ONNX runtime on every detection frame.
     const now = Date.now()
-    if (now - lastProcessRef.current < 1500) return
+    if (now - lastProcessRef.current < 800) return
     lastProcessRef.current = now
 
     // Capture non-null ref for use inside the async closure
