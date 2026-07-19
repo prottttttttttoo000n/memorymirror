@@ -89,9 +89,11 @@ export const FACE_RECOGNITION = {
   ENROLL_DEBOUNCE_MS: 5000,
   /** Minimum face width (pixels) to consider for enrollment */
   ENROLL_MIN_FACE_WIDTH: 100,
-  /** CDN path for ONNX Runtime WebAssembly backend files.
-   * MUST match the installed onnxruntime-web version in package.json. */
-  WASM_CDN: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/',
+  /** Path to ONNX Runtime WebAssembly backend files.
+   * Uses locally-hosted non-threaded WASM files from ORT 1.17.1 to avoid
+   * the SharedArrayBuffer requirement (COOP/COEP headers not available
+   * on Cloudflare Pages). Files are in public/wasm/. */
+  WASM_CDN: '/wasm/',
 } as const
 
 /** LLM configuration for Workers AI Llama 3.1 8B extraction */

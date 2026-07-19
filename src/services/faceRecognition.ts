@@ -54,6 +54,15 @@ export async function initializeFaceRecognition(): Promise<boolean> {
   if (initialized) return true
   if (initPromise) return initPromise
 
+  // Timeout wrapper to prevent indefinite hangs (e.g. when WASM can't load)
+  const withTimeout = <T>(promise: Promise<T>, ms: number, label: string): Promise<T> =>
+    Promise.race([
+      promise,
+      new Promise<T>((_, reject) =>
+        setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms),
+      ),
+    ])
+
   initPromise = (async (): Promise<boolean> => {
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
@@ -65,10 +74,14 @@ export async function initializeFaceRecognition(): Promise<boolean> {
         ort.env.wasm.proxy = false
 
         const modelPath = FACE_RECOGNITION.MODEL_PATH
-        session = await ort.InferenceSession.create(modelPath, {
-          executionProviders: ['wasm'],
-          graphOptimizationLevel: 'all',
-        })
+        session = await withTimeout(
+          ort.InferenceSession.create(modelPath, {
+            executionProviders: ['wasm'],
+            graphOptimizationLevel: 'all',
+          }),
+          30000,
+          'Model load',
+        )
 
         // Discover input/output names from the model
         const inputNames = session.inputNames
