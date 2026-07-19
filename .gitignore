@@ -40,5 +40,9 @@ dist-ssr
 # Local-only internal reference (not published to GitHub)
 INTERNAL.md
 
+# Playwright MCP snapshots
+.playwright-mcp/
+page-snapshot.txt
+
 # OS junk
 Thumbs.db
