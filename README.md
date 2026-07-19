@@ -592,4 +592,4 @@ The app handles these scenarios:
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE) for details.
