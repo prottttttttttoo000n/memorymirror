@@ -1,0 +1,33 @@
+{
+  "name": "memorymirror",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "dev:pages": "wrangler pages dev dist/ --proxy 5173",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "tunnel": "npx cloudflared tunnel --url http://localhost:5173"
+  },
+  "dependencies": {
+    "idb": "^8.0.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "workbox-window": "^7.4.1"
+  },
+  "devDependencies": {
+    "@mediapipe/tasks-vision": "^0.10.0",
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "onnxruntime-web": "^1.21.0",
+    "oxlint": "^1.71.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1",
+    "vite-plugin-pwa": "^1.0.0",
+    "wrangler": "^4.0.0"
+  }
+}

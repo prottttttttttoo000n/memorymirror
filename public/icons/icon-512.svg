@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#0f0f23"/>
+  <g transform="translate(256,256)">
+    <!-- Eye / memory icon -->
+    <ellipse cx="0" cy="0" rx="140" ry="84" fill="none" stroke="#00d4ff" stroke-width="8"/>
+    <circle cx="0" cy="0" r="40" fill="#00d4ff" opacity="0.8"/>
+    <circle cx="0" cy="0" r="16" fill="#0f0f23"/>
+    <!-- Neural/memory arcs -->
+    <path d="M-160,-50 Q-120,-120 -50,-70" fill="none" stroke="#7b2ff7" stroke-width="6" stroke-linecap="round"/>
+    <path d="M160,-50 Q120,-120 50,-70" fill="none" stroke="#7b2ff7" stroke-width="6" stroke-linecap="round"/>
+    <path d="M-140,30 Q-70,80 0,50 Q70,80 140,30" fill="none" stroke="#7b2ff7" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+  </g>
+</svg>

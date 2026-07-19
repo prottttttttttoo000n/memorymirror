@@ -1,0 +1,5 @@
+# Cloudflare credentials for local Pages development.
+# Copy this file to .dev.vars and fill in your values.
+# These are read by `wrangler pages dev` for Pages Function env vars.
+CLOUDFLARE_ACCOUNT_ID=your_account_id_here
+CLOUDFLARE_API_TOKEN=your_api_token_here

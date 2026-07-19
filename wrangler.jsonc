@@ -1,0 +1,25 @@
+{
+  /** Cloudflare Pages project configuration for MemoryMirror */
+
+  "name": "memorymirror",
+  "pages_build_output_dir": "dist",
+
+  /** Environment variables for Pages Functions (also set in Cloudflare dashboard) */
+  "vars": {
+    "LLM_MODEL": "@cf/meta/llama-3.1-8b-instruct-fp8-fast",
+    "STT_MODEL": "@cf/openai/whisper-large-v3-turbo"
+  },
+
+  /**
+   * Cloudflare API credentials (set these as secrets, not vars):
+   *   npx wrangler pages secret put CLOUDFLARE_ACCOUNT_ID
+   *   npx wrangler pages secret put CLOUDFLARE_API_TOKEN
+   *
+   * For local dev, create a `.dev.vars` file in the project root:
+   *   CLOUDFLARE_ACCOUNT_ID=your_account_id
+   *   CLOUDFLARE_API_TOKEN=your_api_token
+   */
+
+  /** Compatibility date for the Workers runtime */
+  "compatibility_date": "2026-07-01"
+}
